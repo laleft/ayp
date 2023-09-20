@@ -29,7 +29,7 @@ int main(int argc, char *argv[]) {
     }
 
     /* InicializaciOn */
-    setlocale(LC_ALL, ""); // No sé si funciona
+    setlocale(LC_ALL, ""); // No sï¿½ si funciona
     char munero[4]; // nUmero a adivinar
     int f_random = 1;    // flag numero random (toma valor true cuando el nUmero sea random)
     srand(time(NULL)); // usa el reloj como semilla
@@ -50,7 +50,7 @@ int main(int argc, char *argv[]) {
         int random_3 = rand() % 10;
         int random_4 = rand() % 10;
         sprintf(munero, "%d%d%d%d", random_1, random_2, random_3, random_4);
-        if (debug) printf("El numero es %s\n", munero);
+        if (debug) printf("\nNumero %s\n", munero);
         f_random = checkNotEqualNumbers(munero, 0);
     }
     

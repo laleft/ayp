@@ -7,15 +7,15 @@ int checkNotEqualNumbers(char numbers[], int start_at) {
     int flag = 0;
     for(int i = start_at; i < strlen(numbers) - 1; i++) {
         if (debug) {
-            printf("[Indice: %d] ", start_at);
-            printf("%c - %c ", numbers[start_at], numbers[i + 1]);
+            printf("[%d] --> ", start_at);
+            printf("%c == %c ", numbers[start_at], numbers[i + 1]);
         }
         if(numbers[start_at] == numbers[i + 1]) {
-            if (debug) printf("Son iguales\n");
+            if (debug) printf(" T\n");
             flag = 1;
             break; // Interrumpe el bucle para no seguir comparando
         } else {
-            if (debug) printf("Son distintos\n");
+            if (debug) printf(" F\n");
         }
     }
     if(flag == 1) { // Si ya encontró dos números iguales retorna false y termina la función
