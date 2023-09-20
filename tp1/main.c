@@ -14,57 +14,44 @@
 
 #include "config/colors.c"
 #include "config/settings.c"
+#include "lib/check_not_equal_numbers.c"
 #include "lib/print_breakline.c"
 
+int debug = 0; // variable global para activar modo debug
 
-int checkNotEqualNumbers(char numbers[], int start_at) {
-    if(strlen(numbers) == start_at) {
-        return 0;
-    }
-    int flag = 0;
-    for(int i = start_at; i < strlen(numbers) - 1; i++) {
-        printf("[Indice: %d] ", start_at);
-        printf("%c - %c ", numbers[start_at], numbers[i + 1]);
-        if(numbers[start_at] == numbers[i + 1]) {
-            printf("Son iguales\n");
-            flag = 1;
-            break;
-        } else {
-            printf("Son distintos\n");
+
+int main(int argc, char *argv[]) {
+    /* Modo debug */
+    if(argc >= 2) {
+        if(! strcmp(argv[1],"debug")) {
+            debug = 1;
         }
     }
-    if(flag == 1) {
-        return flag;
-    } else {
-        flag = checkNotEqualNumbers(numbers, start_at + 1);
-    }
-    return flag;
-}
 
-int main(void) {
-    setlocale(LC_ALL, "");  
+    /* InicializaciOn */
+    setlocale(LC_ALL, ""); // No sé si funciona
+    char munero[4]; // nUmero a adivinar
+    int f_random = 1;    // flag numero random (toma valor true cuando el nUmero sea random)
+    srand(time(NULL)); // usa el reloj como semilla
+    
 
-    printf("%s%s%s%s\n", "Bienvenido a ", COLOR_CYAN, "MUNERO", COLOR_RESET ", un juego en el que deberï¿½s adivinar un nï¿½mero de 4 cifras que elegirï¿½ al azar");
+    /* PresentaciOn */
+    printf("%s%s%s%s\n", "Bienvenido a ", COLOR_CYAN, "MUNERO", COLOR_RESET ", un juego en el que deberAs adivinar un nUmero de 4 cifras que elegirE al azar");
     printf("%s", COLOR_YELLOW);
     printBreakline(2);
     // system("pause");
     printf("%s", COLOR_RESET);
+    printf("Generando nUmero aleatorio...\n");
 
-    char munero[4]; // nï¿½mero a adivinar
-    int f_random = 1;    // flag numero random (toma valor true cuando el nÃºmero sea random)
-
-    srand(time(NULL)); // usa el reloj como semilla
-    
+    /* Busca un nUmero de 4 cifras aleatoreas no repetidas */
     while(f_random == 1) {
         int random_1 = rand() % 10;
         int random_2 = rand() % 10;
         int random_3 = rand() % 10;
         int random_4 = rand() % 10;
         sprintf(munero, "%d%d%d%d", random_1, random_2, random_3, random_4);
-        printf("El numero es %s\n", munero);
+        if (debug) printf("El numero es %s\n", munero);
         f_random = checkNotEqualNumbers(munero, 0);
-        printf("Valor del flag: %d\n", f_random);
-        // f_random = 0;
     }
     
     return 0;
