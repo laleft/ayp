@@ -36,12 +36,25 @@ int main(int argc, char *argv[]) {
     
 
     /* PresentaciOn */
-    printf("%s%s%s%s\n", "Bienvenido a ", COLOR_CYAN, "MUNERO", COLOR_RESET ", un juego en el que deberAs adivinar un nUmero de 4 cifras que elegirE al azar");
+    system("cls"); // solo para Windows
     printf("%s", COLOR_YELLOW);
+    printf("\n%s%s%s%s", "BIENVENIDO A ", COLOR_CYAN, "MUNERO", COLOR_YELLOW ", UN JUEGO EN EL QUE DEBERAS ADIVINAR UN NUMERO DE 4 CIFRAS QUE ELEGIRE AL AZAR");
     printBreakline(2);
-    // system("pause");
     printf("%s", COLOR_RESET);
-    printf("Generando nUmero aleatorio...\n");
+    
+    int c;
+    FILE *file;
+    file = fopen("intro.txt", "r");
+    if (file) {
+        while ((c = getc(file)) != EOF)
+            putchar(c);
+        fclose(file);
+    }
+    system("pause");
+    
+    printf("GENERANDO NUMERO ALEATORIO...\n");
+
+    
 
     /* Busca un nUmero de 4 cifras aleatoreas no repetidas */
     while(f_random == 1) {

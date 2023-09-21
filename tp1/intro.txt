@@ -1,0 +1,23 @@
+*------------------------------------------------------------------------------------------------*
+| REGLAS:                                                                                        |
+|                                                                                                |
+| PARA ADIVINAR EL NUMERO QUE ELEGI, DEBERAS INGRESAR 4 CIFRAS TODAS DIFERENTES                  |
+|                                                                                                |
+| LOS NUMEROS QUE HAYAS ACERTADO EN LA MISMA POSICION ESTARAN "BIEN".                            |
+|                                                                                                |
+| LOS NUMEROS QUE ESTAN ENTRE LOS QUE ELEGI, PERO NO EN LA MISMA POSICION, ESTARAN "REGULAR".    |
+|                                                                                                |
+| POR EJEMPLO:                                                                                   |
+|                                                                                                |
+| SI YO ELIJO EL NUMERO 4260 Y EL QUE INGRESES ES 3206, MI RESPUESTA SERA:                       |
+|                                                                                                |
+| "HAY 1 BIEN Y 2 REGULAR/ES"                                                                    |
+|                                                                                                |
+| - EL "4" NO ESTA ENTRE LOS NUMEROS QUE ELEGI                                                   |
+| - EL "2" ESTA Y EN LA MISMA POSICION                                                           |
+| - EL "0" ESTA, PERO EN OTRA POSICION                                                           |
+| - EL "6" ESTA, PERO EN OTRA POSICION                                                           |
+|                                                                                                |
+| TENES 15 INTENTOS PARA ACERTAR EL NUMERO. SUERTE!                                              |
+*------------------------------------------------------------------------------------------------*
+
