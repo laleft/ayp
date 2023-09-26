@@ -1,26 +1,38 @@
 extern int debug; // variable global
 
-int checkNotEqualNumbers(char numbers[], int start_at) {
-    if(strlen(numbers) == start_at) {  // Si llega hasta esta igualdad, todos los retornos fueron 0
-        return 0;
+int checkNotEqualNumbers(char numbers[], int start_at)
+{
+    if (strlen(numbers) == start_at)
+    { // Si llega hasta esta igualdad, todos los retornos fueron 0
+        return 1;
     }
-    int flag = 0;
-    for(int i = start_at; i < strlen(numbers) - 1; i++) {
-        if (debug) {
+    int flag = 1;
+    for (int i = start_at; i < strlen(numbers) - 1; i++)
+    {
+        if (debug)
+        {
             printf("[%d] --> ", start_at);
             printf("%c == %c ", numbers[start_at], numbers[i + 1]);
         }
-        if(numbers[start_at] == numbers[i + 1]) {
-            if (debug) printf(" T\n");
-            flag = 1;
+        if (numbers[start_at] == numbers[i + 1])
+        {
+            if (debug)
+                printf(" T\n");
+            flag = 0;
             break; // Interrumpe el bucle para no seguir comparando
-        } else {
-            if (debug) printf(" F\n");
+        }
+        else
+        {
+            if (debug)
+                printf(" F\n");
         }
     }
-    if(flag == 1) { // Si ya encontró dos números iguales retorna false y termina la función
+    if (flag == 0)
+    { // Si ya encontró dos números iguales retorna false y termina la función
         return flag;
-    } else {
+    }
+    else
+    {
         flag = checkNotEqualNumbers(numbers, start_at + 1);
     }
 }
