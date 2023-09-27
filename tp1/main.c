@@ -73,27 +73,53 @@ int main(int argc, char *argv[])
         f_random = checkNotEqualNumbers(munero, 0);
     }
 
-    char digits[5];
+    char input[5];
     int i;
-    for (int x = 0; x < 6; x++)
+    int attempts = 0;
+    int success = 0;
+    while (attempts < MAX_ATTEMPTS && success != 1)
     {
-        printf("Ingresá un número de 4 dígitos todos diferentes: ");
-        if (fgets(digits, sizeof(digits), stdin))
+        printf("INGRESA 4 DIGITOS DIFERENTES: ");
+        if (fgets(input, sizeof(input), stdin))
         {
-            if (1 == sscanf(digits, "%d", &i))
+            fflush(stdin);
+            if (strcmp(strupr(input), "FIN\n") == 0)
             {
-                if (checkNotEqualNumbers(digits, 0) == 0)
+                printBreakline(2);
+                printf("*** HASTA LA PROXIMA! ***");
+                printBreakline(2);
+                exit(0);
+            }
+            if (1 == sscanf(input, "%d", &i))
+            {
+                printf("CANTIDAD DE DIGITOS: %d\n", sizeof(input) / sizeof(input[0]));
+                if (sizeof(input) < 4)
                 {
-                    printf("Los dígitos no pueden repetirse! %s\n", digits);
+                    printf(">>> DEBE INGRESAR 4 DIGITOS!\n");
+                    continue;
+                }
+                if (checkNotEqualNumbers(input, 0) == 0)
+                {
+                    printf(">>> LOS DIGITOS NO PUEDEN REPETIRSE!\n", input);
                 }
                 else
                 {
                     printf("2 BIEN 1 REGULAR\n");
+                    attempts++;
+                    printf("INTENTO: %d\n", attempts);
                 }
-                fflush(stdin);
+            }
+            else
+            {
+                printf(">>> SOLO DEBE INGRESAR DIGITOS!\n");
             }
         }
     }
+
+    printBreakline(2);
+    printf("*** EL NUMERO ERA: %s ***", munero);
+    printBreakline(2);
+    printf("MAS SUERTE LA PROXIMA VEZ!\n");
 
     return 0;
 }
