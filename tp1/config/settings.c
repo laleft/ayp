@@ -1,1 +1,2 @@
 #define MAX_INPUT_LENGTH 20
+#define MAX_ATTEMPTS 5
