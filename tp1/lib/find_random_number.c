@@ -2,17 +2,20 @@
 
 extern int debug;
 
-char findRandomNumber() {
+int *findRandomNumber()
+{
     int f_random = 1; // Flag
-    char numero[4];
-    while(f_random == 1) {
+    char number[4];
+    while (f_random == 1)
+    {
         int random_1 = rand() % 10;
         int random_2 = rand() % 10;
         int random_3 = rand() % 10;
         int random_4 = rand() % 10;
-        sprintf(numero, "%d%d%d%d", random_1, random_2, random_3, random_4);
-        if (debug) printf("El numero es %s\n", numero);
-        f_random = checkNotEqualNumbers(numero, 0);
+        sprintf(number, "%d%d%d%d", random_1, random_2, random_3, random_4);
+        if (debug)
+            printf("[DEBUG] EL NUMERO ES %s\n", number);
+        f_random = checkNotEqualNumbers(number, 0);
     }
-    return numero;
+    return number;
 }

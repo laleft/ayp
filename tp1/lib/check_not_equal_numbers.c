@@ -3,7 +3,7 @@ extern int debug; // variable global
 int checkNotEqualNumbers(char numbers[], int start_at)
 {
     if (strlen(numbers) == start_at)
-    { // Si llega hasta esta igualdad, todos los retornos fueron 0
+    { // Si llega hasta esta igualdad, todos los retornos fueron 1
         return 1;
     }
     int flag = 1;
