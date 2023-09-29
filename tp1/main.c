@@ -20,6 +20,18 @@
 #include "lib/helpers.c"
 #include "game.c"
 
+/*
+Macros:
+
+BR  -> imprime saltos de lInea
+YLW -> cambia a color amarillo
+CYN -> cambia a color cyan
+RPT -> repite un caracter
+RST -> resetea color
+ERR -> muestra un mensaje de error (rojo)
+
+*/
+
 int debug = 0; // variable global para activar modo debug
 
 int main(int argc, char *argv[])
@@ -33,11 +45,7 @@ int main(int argc, char *argv[])
         }
     }
 
-    /* InicializaciOn */
     setlocale(LC_ALL, ""); // No sE si funciona
-    char munero[4];        // nUmero a adivinar
-    int f_random = 0;      // flag (toma valor true cuando el nUmero sea random)
-    srand(time(NULL));     // usa el reloj como semilla
     char name[50];         // nombre del usuario
 
     /* PresentaciOn */
@@ -58,6 +66,7 @@ int main(int argc, char *argv[])
     BR(2);
     printf("%s", COLOR_RESET);
 
+    /* Muestra instrucciones */
     int t;
     FILE *file;
     file = fopen("intro.txt", "r");
@@ -67,8 +76,8 @@ int main(int argc, char *argv[])
             putchar(t);
         fclose(file);
     }
-    /* Fin presentaciOn */
 
+    /* Solicita nombre de usuario (o anOnimo) */
     printf("INGRESA TU NOMBRE: ");
     fgets(name, sizeof(name), stdin);
     if (strcmp(name, "\n") == 0)
@@ -77,6 +86,7 @@ int main(int argc, char *argv[])
     printf(">>> HOLA, %s", name);
     BR(1);
 
+    /* Inicia el juego */
     int play = 1;
     do // Se ejecuta el juego mientras play sea true
     {
