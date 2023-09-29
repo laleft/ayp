@@ -1,8 +1,8 @@
 /*
- * filename: munero.c
+ * filename: main.c
  *
  * author: sdebernardez
- * version: 0.0.1
+ * version: 0.1.15
  *
  */
 
@@ -78,23 +78,31 @@ int main(int argc, char *argv[])
     BR(1);
 
     int play = 1;
-    do
+    do // Se ejecuta el juego mientras play sea true
     {
+        /* Inicia la partida */
         game();
+
+        /* Menu de opciones */
         char ch;
-        while (ch != 'S' || ch != 'N')
+        do // Se ejecuta mientras no se ingresen las opciones correctas
         {
-            printf("JUGAR OTRA VEZ? (S/N): ");
+            while ((ch = getchar()) != '\n' && ch != EOF)
+                continue;
+            printf("JUGAR OTRA VEZ? (S)I/(N)O: ");
             ch = getchar();
-            putchar(ch);
-            printf("\n");
-        }
-        if (ch == 'N')
-        {
-            play = 0;
-        }
+            if (ch == 'N' || ch == 'n')
+            {
+                play = 0;
+            }
+
+        } while (ch != 'S' && ch != 's' && ch != 'N' && ch != 'n');
 
     } while (play);
+
+    BR(2);
+    printf("*** HASTA LA PROXIMA! ***");
+    BR(2);
 
     return 0;
 }
