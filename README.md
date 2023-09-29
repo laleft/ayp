@@ -13,7 +13,7 @@ Las instrucciones se muestran al inicio del juego.
 
 ```
 git clone https://github.com/laleft/ayp.git
-cd ayp
+cd ayp/tp1
 gcc main.c -o munero
 ```
 
