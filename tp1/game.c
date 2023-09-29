@@ -1,10 +1,11 @@
 #include <stdio.h>
+#include <time.h>
 #include "config/settings.c"
 #include "lib/helpers.c"
 
 extern int debug;
 
-void game()
+int game()
 {
     char munero[4];   // nUmero a adivinar
     int f_random = 0; // flag (toma valor true cuando el nUmero sea random)
@@ -26,23 +27,27 @@ void game()
             printf("\n[DEBUG] NUMERO: %s\n", munero);
         f_random = checkNotEqualNumbers(munero, 0);
     }
-    CYN
-        printf("NUMERO GENERADO: ****\n");
-    RST
-        BR(1);
+    CYN;
+    printf("NUMERO GENERADO: ");
+    if (debug)
+        printf("%s", munero);
+    else
+        printf("****");
+    RST;
+    BR(2);
     /* Variables del loop */
     char input[5];
     int i;
     int attempts = 0;
-    int success = 0;
+    time_t start_time, end_time;
     /* Mientras no supere los intentos y no adivine el numero */
-    while (attempts < MAX_ATTEMPTS && success != 1)
+    time(&start_time);
+    while (attempts < MAX_ATTEMPTS)
     {
+        fflush(stdin); // vacIa el buffer
         printf("INGRESA 4 DIGITOS: ");
         if (fgets(input, sizeof(input), stdin))
         {
-            fflush(stdin); // vacIa el buffer
-
             /* Si el usuario ingresa "fin" sale del programa */
             if (strcmp(strupr(input), "FIN\n") == 0)
             {
@@ -62,6 +67,7 @@ void game()
                 else
                 {
                     /* PasO las validaciones, chequea  los nUmeros */
+                    attempts++;
                     int wrong = 4;
                     int right = 0;
                     int regular = 0;
@@ -72,7 +78,7 @@ void game()
                             if (input[x] == munero[y])
                             {
                                 if (debug)
-                                    printf("[%d, %d](%c = %c)\n", x, y, input[x], munero[y]);
+                                    printf("[DEBUG] POSICION COINCIDENCIAS [%d, %d](%c = %c)\n", x, y, input[x], munero[y]);
                                 if (x == y)
                                 {
                                     right++;
@@ -92,7 +98,14 @@ void game()
                     }
                     else if (right == 4)
                     {
-                        printf("%sBIEN!!! ACERTASTE EL NUMERO EN %d INTENTOS%s", COLOR_GREEN, attempts, COLOR_RESET);
+                        time(&end_time);
+                        double total_time_in_seconds = difftime(end_time, start_time);
+                        int minutes = total_time_in_seconds / 60;
+                        int seconds = (int)total_time_in_seconds % 60;
+
+                        printf("%sBIEN!!! ACERTASTE EL NUMERO EN %d INTENTOS EN %d MINUTOS Y %d SEGUNDOS %s", COLOR_GREEN, attempts, minutes, seconds, COLOR_RESET);
+                        BR(2);
+                        return 1;
                     }
                     else
                     {
@@ -102,9 +115,9 @@ void game()
                             printf("%s%d REGULAR%s", COLOR_YELLOW, regular, COLOR_RESET);
                     }
                     BR(1);
-                    attempts++;
+
                     if (debug)
-                        printf("INTENTO: %d\n", attempts);
+                        printf("[DEBUG] INTENTO: %d\n", attempts);
                 }
             }
             else
@@ -113,9 +126,10 @@ void game()
             }
         }
     }
-
     BR(2);
     printf(">>> NO TENES MAS INTENTOS, EL NUMERO ERA: %s\n", munero);
     BR(2);
     printf(">>> MAS SUERTE LA PROXIMA VEZ!\n");
+    BR(2);
+    return 0;
 }
