@@ -2,7 +2,7 @@
 
 extern int debug;
 
-int *findRandomNumber()
+int findRandomNumber()
 {
     int f_random = 1; // Flag
     char number[4];

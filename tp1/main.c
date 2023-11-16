@@ -11,14 +11,13 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
-#include <ctype.h>
 
 #include "config/colors.c"
 #include "config/settings.c"
+#include "lib/helpers.c"
 #include "lib/check_not_equal_numbers.c"
 #include "lib/check_all_are_digits.c"
-#include "lib/helpers.c"
-#include "game.c"
+#include "munero.c"
 
 /*
 Macros:
