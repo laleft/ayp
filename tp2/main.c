@@ -1,18 +1,36 @@
 #include <stdio.h>
+#include <windows.h>
 #include "config/const.c"
 #include "utils/prompt_for_name.c"
-#include "fragments/launch.c"
+#include "modules/launch.c"
+#include "games/munero.c"
+#include "modules/select_game.c"
 
-int main()
+int debug = 0; // variable global para activar modo debug
+
+int main(int argc, char *argv[])
 {
+    if (argc >= 2)
+    {
+        if (!strcmp(argv[1], "debug"))
+        {
+            debug = 1;
+        }
+    }
 
-    launch(); // Arranque del programa.
+    char *user_name = launch(); // Arranque del programa.
 
-    // Solictar nombre de usuario
-    char user_name[MAX_USERNAME_LENGTH];
-    promptForName(user_name, MAX_USERNAME_LENGTH);
+    int selected_game = selectGame();
 
-    printf("Bienvenid@, %s!", user_name);
+    switch (selected_game)
+    {
+    case 1:
+        munero();
+        break;
+
+    default:
+        break;
+    }
 
     return 0;
 }
