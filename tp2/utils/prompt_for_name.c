@@ -14,13 +14,16 @@
  *  - sin valor de retorno (void)
  *
  */
+
+#define ANON "AnOnimo"
+
 void promptForName(char *input, int max_username_lenth)
 {
     /* Solicita nombre de usuario (o anOnimo) */
     printf("INGRESA TU NOMBRE: ");
     fgets(input, max_username_lenth, stdin);
     if (strcmp(input, "\n") == 0)
-        strcpy(input, "Anonymus\n");
+        strcpy(input, ANON);
 
     input[strcspn(input, "\n")] = 0; // Elimina el salto de lInea al final
 }
