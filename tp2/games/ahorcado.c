@@ -9,13 +9,6 @@
 #define MAX_WORD_LENGTH 100
 #define MAX_JUGADORES 10
 
-// Estructura para almacenar los puntajes de los jugadores
-typedef struct
-{
-    char name[50];
-    int score;
-} Player;
-
 void loadDictionary(char *words[], int *totalWords)
 {
     FILE *dictionary = fopen("games/ahorcado/dictionary.txt", "r");
@@ -38,7 +31,7 @@ void loadDictionary(char *words[], int *totalWords)
     fclose(dictionary);
 }
 
-void play(char *word)
+int play(char *word)
 {
     int attempts = 7;
     int hits = 0;
@@ -47,6 +40,7 @@ void play(char *word)
     char used_letters[26];
     int used_letters_number = 0;
     int already_used = 0; // para analizar si repitió una letra
+    int win;
 
     for (int i = 0; i < word_length; i++)
     {
@@ -148,6 +142,7 @@ void play(char *word)
         BR(2);
         HIT("GANASTE!!!!")
         BR(1);
+        win = 1;
     }
     else
     {
@@ -161,7 +156,9 @@ void play(char *word)
             printf("%c ", word[i]);
         }
         RST;
+        win = 0;
     }
+    return win;
 }
 
 int ahorcado()
@@ -173,14 +170,13 @@ int ahorcado()
     int totalWords;
     loadDictionary(dictionary, &totalWords);
 
-    // Juego del ahorcado
     srand(time(NULL));
     char *word = dictionary[rand() % totalWords];
     time_t start_time, end_time;
     int option;
 
     time(&start_time); // toma el tiempo de inicio de la ronda
-    play(word);
+    int win = play(word);
     time(&end_time);
     double total_time_in_seconds = difftime(end_time, start_time);
     int minutes = total_time_in_seconds / 60;
@@ -188,57 +184,8 @@ int ahorcado()
 
     printf("\n%sTIEMPO TOTAL: %d MINUTOS Y %d SEGUNDOS %s", COLOR_GREEN, minutes, seconds, COLOR_RESET);
 
-    // Almacenar puntaje
-    // Jugador jugadores[MAX_JUGADORES];
-    // int numJugadores = 0;
-    // FILE *puntajes = fopen("puntajes.txt", "a+");
-    // if (puntajes == NULL)
-    // {
-    //     printf("No se pudo abrir el archivo de puntajes.\n");
-    // }
-    // else
-    // {
-
-    //     while (fscanf(puntajes, "%s %d", jugadores[numJugadores].nombre, &jugadores[numJugadores].puntaje) != EOF)
-    //     {
-    //         numJugadores++;
-    //     }
-
-    //     // Agregar el nuevo jugador y puntaje
-    //     strcpy(jugadores[numJugadores].nombre, nombre);
-    //     jugadores[numJugadores].puntaje = numwords - strlen(word);
-    //     numJugadores++;
-
-    //     // Ordenar los puntajes
-    //     for (int i = 0; i < numJugadores; i++)
-    //     {
-    //         for (int j = i + 1; j < numJugadores; j++)
-    //         {
-    //             if (jugadores[i].puntaje < jugadores[j].puntaje)
-    //             {
-    //                 Jugador temp = jugadores[i];
-    //                 jugadores[i] = jugadores[j];
-    //                 jugadores[j] = temp;
-    //             }
-    //         }
-    //     }
-
-    //     // Guardar los mejores 10 puntajes
-    //     rewind(puntajes);
-    //     for (int i = 0; i < (numJugadores < 10 ? numJugadores : 10); i++)
-    //     {
-    //         fprintf(puntajes, "%s %d\n", jugadores[i].nombre, jugadores[i].puntaje);
-    //     }
-
-    //     fclose(puntajes);
-    // }
-
-    // Mostrar el ranking
-    // printf("\nRanking de los 10 mejores jugadores:\n");
-    // for (int i = 0; i < (numJugadores < 10 ? numJugadores : 10); i++)
-    // {
-    //     printf("%d. %s - %d\n", i + 1, jugadores[i].nombre, jugadores[i].puntaje);
-    // }
-
-    return 0;
+    if (win == 1)
+        return total_time_in_seconds;
+    else
+        return 0;
 }

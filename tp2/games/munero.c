@@ -58,12 +58,7 @@ int munero()
         {
             /* Si el usuario ingresa "fin" sale del programa */
             if (strcmp(strupr(input), "FIN\n") == 0)
-            {
-                BR(2);
-                printf("*** HASTA LA PROXIMA! ***");
-                BR(2);
-                exit(0); // sale del programa
-            }
+                return 0; // vuelve al menU principal
 
             /* Chequea que los primeros 4 caracteres sean dIgitos */
             if (1 == sscanf(input, "%d", &i) && checkAllAreDigits(input, 4))

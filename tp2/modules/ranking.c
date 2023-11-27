@@ -3,7 +3,7 @@
 #include <string.h>
 
 #define MAX_ENTRIES 10
-
+#define DATAFILE "data/ranking.dat"
 typedef struct
 {
     char name[50];
@@ -12,50 +12,52 @@ typedef struct
 
 int compareEntries(const void *a, const void *b)
 {
-    return ((RankingEntry *)b)->score - ((RankingEntry *)a)->score;
+    return ((RankingEntry *)a)->score - ((RankingEntry *)b)->score;
 }
 
-RankingEntry createEntry()
+RankingEntry createEntry(char *name, int score)
 {
     RankingEntry newEntry;
-    printf("Enter the name: ");
-    scanf("%s", newEntry.name);
-    printf("Enter the score: ");
-    scanf("%d", &newEntry.score);
+    strcpy(newEntry.name, name);
+    newEntry.score = score;
     return newEntry;
 }
 
-void saveToFile(const char *fileName, RankingEntry *list, int numEntries)
+void saveToFile(const char *file_name, RankingEntry *list, int num_entries)
 {
-    FILE *file = fopen(fileName, "wb");
+    FILE *file = fopen(file_name, "wb");
     if (file == NULL)
     {
-        perror("Error opening file for writing");
+        perror("Error abriendo el archivo para escritura.");
         exit(EXIT_FAILURE);
     }
-
-    fwrite(list, sizeof(RankingEntry), numEntries, file);
+    RankingEntry data;
+    printf("ESCRIBIENDO...\n");
+    fwrite(list, sizeof(data), num_entries, file);
 
     fclose(file);
 }
 
-void loadFromFile(const char *fileName, RankingEntry **list, int *numEntries)
+void loadFromFile(const char *file_name, RankingEntry **list, int *num_entries)
 {
-    FILE *file = fopen(fileName, "rb");
+    FILE *file = fopen(file_name, "rb");
     if (file == NULL)
     {
-        perror("Error opening file for reading");
+        perror("Error abriendo el archivo para lectura.");
         exit(EXIT_FAILURE);
     }
 
-    fseek(file, 0, SEEK_END);
-    long fileSize = ftell(file);
-    *numEntries = fileSize / sizeof(RankingEntry);
+    RankingEntry data;
 
-    *list = (RankingEntry *)malloc(fileSize);
+    fseek(file, 0, SEEK_END);
+    long file_size = ftell(file);
+    *num_entries = file_size / sizeof(data);
+
+    *list = (RankingEntry *)malloc(file_size);
 
     rewind(file);
-    fread(*list, sizeof(RankingEntry), *numEntries, file);
+    printf("LEYENDO...\n");
+    fread(*list, sizeof(data), *num_entries, file);
 
     fclose(file);
 }
@@ -65,70 +67,72 @@ void printAlignedEntry(const char *name, int score)
     printf("%-50s %d\n", name, score);
 }
 
-int main()
+int ranking(char *name, int score)
 {
     // Load the list from the binary file
     RankingEntry *ranking;
-    int numEntries;
-    loadFromFile("ranking.bin", &ranking, &numEntries);
+    int num_entries;
+    loadFromFile(DATAFILE, &ranking, &num_entries);
+
+    printf("ENTRADAS: %d", num_entries);
+
+    if (score > 0)
+    {
+        RankingEntry newEntry = createEntry(name, score);
+
+        // Add the new entry if it's among the top 10
+        int insertIndex = num_entries;
+        for (int i = 0; i < num_entries; i++)
+        {
+            printf("New Entry Score: %d - Ranking Score: %d", newEntry.score, ranking[i].score);
+            if (newEntry.score > ranking[i].score)
+            {
+                insertIndex = i;
+                break;
+            }
+        }
+
+        if (insertIndex < MAX_ENTRIES)
+        {
+            // Shift entries to make room for the new entry
+            for (int i = num_entries - 1; i > insertIndex; i--)
+            {
+                ranking[i] = ranking[i - 1];
+            }
+
+            // Insert the new entry
+            ranking[insertIndex] = newEntry;
+
+            // Update the number of entries
+            num_entries = (num_entries < MAX_ENTRIES) ? (num_entries + 1) : MAX_ENTRIES;
+
+            // Sort the updated list
+            qsort(ranking, num_entries, sizeof(RankingEntry), compareEntries);
+
+            // Save the updated list to the file
+            saveToFile(DATAFILE, ranking, num_entries);
+            printf("\nThe new entry has been added to the ranking.\n");
+        }
+        else
+        {
+            printf("\nThe new entry did not make it to the top 10.\n");
+        }
+    }
 
     // Display the current ranking
-    printf("Current Ranking:\n");
-    for (int i = 0; i < numEntries; i++)
-    {
-        printAlignedEntry(ranking[i].name, ranking[i].score);
-    }
-
-    // Get a new entry from the user
-    printf("\nEnter a new entry:\n");
-    RankingEntry newEntry = createEntry();
-
-    // Add the new entry if it's among the top 10
-    int insertIndex = numEntries;
-    for (int i = 0; i < numEntries; i++)
-    {
-        if (newEntry.score > ranking[i].score)
-        {
-            insertIndex = i;
-            break;
-        }
-    }
-
-    if (insertIndex < MAX_ENTRIES)
-    {
-        // Shift entries to make room for the new entry
-        for (int i = numEntries - 1; i > insertIndex; i--)
-        {
-            ranking[i] = ranking[i - 1];
-        }
-
-        // Insert the new entry
-        ranking[insertIndex] = newEntry;
-
-        // Update the number of entries
-        numEntries = (numEntries < MAX_ENTRIES) ? (numEntries + 1) : MAX_ENTRIES;
-
-        // Sort the updated list
-        qsort(ranking, numEntries, sizeof(RankingEntry), compareEntries);
-
-        // Save the updated list to the file
-        saveToFile("ranking.bin", ranking, numEntries);
-        printf("\nThe new entry has been added to the ranking.\n");
-    }
-    else
-    {
-        printf("\nThe new entry did not make it to the top 10.\n");
-    }
-
-    // Display the updated ranking
-    printf("\nUpdated Ranking:\n");
-    for (int i = 0; i < numEntries; i++)
+    printf("\nRANKING DE USUARIOS:\n");
+    for (int i = 0; i < num_entries; i++)
     {
         printAlignedEntry(ranking[i].name, ranking[i].score);
     }
 
     // Free the memory used by the list
     free(ranking);
+
+    printf("PRESIONA [ENTER] PARA VOLVER AL MENU PRINCIPAL...");
+    while (getchar() != '\n')
+        ;
+    getchar();
 
     return 0;
 }

@@ -6,6 +6,7 @@
 #include "games/munero.c"
 #include "games/ahorcado.c"
 #include "modules/select_game.c"
+#include "modules/ranking.c"
 
 int debug = 0; // variable global para activar modo debug
 
@@ -49,7 +50,7 @@ int main(int argc, char *argv[])
 
         // Seleccionar opciOn
         selected_game = selectGame();
-
+        int score;
         switch (selected_game)
         {
         case 1:
@@ -57,7 +58,8 @@ int main(int argc, char *argv[])
             break;
 
         case 2:
-            ahorcado();
+            score = ahorcado();
+            ranking(user_name, score);
             break;
         case 3:
             return 0;
