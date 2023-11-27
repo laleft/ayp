@@ -17,9 +17,11 @@
 int selectGame()
 {
     // Lista de juegos
-    printf("SELECCIONA UN JUEGO:\n");
+    printf("SELECCIONA UN JUEGO:\n\n");
     printf("    1) MUNERO\n");
     printf("    2) AHORCADO\n");
+    printf("    3) SALIR\n\n");
+    printf("OPCION: ");
 
     int game;
     do
@@ -28,12 +30,12 @@ int selectGame()
 
         while (getchar() != '\n')
             ;
-        if (game < 1 || game > 2)
+        if (game < 1 || game > 3)
         {
             ERR("OPCION NO VALIDA! POR FAVOR, SELECCIONA UN JUEGO DE LA LISTA.\n");
         }
 
-    } while (game < 1 || game > 2);
+    } while (game < 1 || game > 3);
 
     return game;
 }
