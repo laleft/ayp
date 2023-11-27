@@ -6,6 +6,11 @@
     printf("%s", msg); \
     printf(COLOR_RESET);
 
+#define HIT(msg)         \
+    printf(COLOR_GREEN); \
+    printf("%s", msg);   \
+    printf(COLOR_RESET);
+
 #define BR(ln)                   \
     for (int i = 0; i < ln; i++) \
         printf("\n");
@@ -19,3 +24,5 @@
 #define YLW printf("%s", COLOR_YELLOW);
 #define RST printf("%s", COLOR_RESET);
 #define CYN printf("%s", COLOR_CYAN);
+
+#define CLS printf("\033[2J\033[1;1H");
