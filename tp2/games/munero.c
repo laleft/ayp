@@ -5,11 +5,15 @@
 #include "../utils/helpers.c"
 #include "../lib/check_all_are_digits.c"
 #include "../lib/check_not_equal_numbers.c"
-
+#include "../lib/print_txt_file.c"
 extern int debug;
 
 int munero()
 {
+    CLS;
+    printBox("BIENVENIDO A MUNERO!", -1, '*');
+    printTxtFile("help/munero.txt");
+
     char munero[4];    // nUmero a adivinar
     int f_random = 0;  // flag (toma valor true cuando el nUmero sea random)
     srand(time(NULL)); // usa el reloj como semilla
