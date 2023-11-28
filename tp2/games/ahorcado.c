@@ -9,6 +9,8 @@
 #define MAX_WORD_LENGTH 100
 #define MAX_JUGADORES 10
 
+extern int debug;
+
 void loadDictionary(char *words[], int *totalWords)
 {
     FILE *dictionary = fopen("games/ahorcado/dictionary.txt", "r");
@@ -172,6 +174,9 @@ int ahorcado()
 
     srand(time(NULL));
     char *word = dictionary[rand() % totalWords];
+
+    printf("\n[DEBUG] %s\n", word);
+
     time_t start_time, end_time;
     int option;
 

@@ -1,205 +1,106 @@
 #include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 
-#define MAX_ENTRIES 10
-#define DATAFILE "data/ranking.dat"
+#define MAX_RANKING_RECORDS 2
 typedef struct
 {
     char name[50];
     int score;
-} RankingEntry;
-
-int compareEntries(const void *a, const void *b)
-{
-    return ((RankingEntry *)a)->score - ((RankingEntry *)b)->score;
-}
-
-RankingEntry createEntry(char *name, int score)
-{
-    RankingEntry newEntry;
-    strcpy(newEntry.name, name);
-    newEntry.score = score;
-    return newEntry;
-}
-
-void guardarCSV(const char *file_name, RankingEntry *list, int num_entries)
-{
-    FILE *archivo = fopen(file_name, "w");
-    if (archivo != NULL)
-    {
-        fprintf(archivo, "Nombre,Score\n"); // Escribir encabezados
-        for (int i = 0; i < num_entries; i++)
-        {
-            fprintf(archivo, "%s,%d\n", list[i].name, list[i].score);
-        }
-        fclose(archivo);
-    }
-    else
-    {
-        // Manejar el error de apertura de archivo
-    }
-}
-
-void leerCSV(const char *file_name, RankingEntry *list, int *num_entries)
-{
-    FILE *archivo = fopen(file_name, "r");
-    if (archivo != NULL)
-    {
-        char linea[100];
-        int contador = 0;
-        // Leer la primera línea (encabezados) y descartarla
-        fgets(linea, sizeof(linea), archivo);
-        // Leer el resto de las líneas
-        while (fgets(linea, sizeof(linea), archivo) != NULL)
-        {
-            char name[50];
-            int score;
-            sscanf(linea, "%49[^,],%d", name, &score);
-            strcpy(list[contador].name, name);
-            list[contador].score = score;
-            contador++;
-        }
-        *num_entries = contador;
-        fclose(archivo);
-    }
-    else
-    {
-        // Manejar el error de apertura de archivo
-    }
-}
-
-void saveToFile(const char *file_name, RankingEntry *list, int num_entries)
-{
-    printf("ESCRIBIENDO...\n");
-    FILE *file = fopen(file_name, "wb");
-    // if (file == NULL)
-    // {
-    //     perror("Error abriendo el archivo para escritura.");
-    //     exit(EXIT_FAILURE);
-    // }
-
-    if (file != NULL)
-    {
-        for (int i = 0; i < num_entries; i++)
-        {
-            fwrite(&list[i], sizeof(RankingEntry), 1, file); // Escribir cada estructura individualmente
-        }
-        fclose(file);
-    }
-    else
-    {
-        // Manejar el error de apertura de archivo
-    }
-
-    // fwrite(list, sizeof(RankingEntry), num_entries, file);
-
-    // fclose(file);
-}
-
-void loadFromFile(const char *file_name, RankingEntry **list, int *num_entries)
-{
-    FILE *file = fopen(file_name, "rb");
-    if (file == NULL)
-    {
-        perror("Error abriendo el archivo para lectura.");
-        exit(EXIT_FAILURE);
-    }
-
-    RankingEntry data;
-
-    fseek(file, 0, SEEK_END);
-    long file_size = ftell(file);
-    *num_entries = file_size / sizeof(data);
-
-    *list = (RankingEntry *)malloc(sizeof(RankingEntry) * 10);
-
-    rewind(file);
-    printf("LEYENDO...\n");
-    fread(*list, sizeof(data), *num_entries, file);
-
-    fclose(file);
-}
-
-void printAlignedEntry(const char *name, int score)
-{
-    printf("%-50s %d\n", name, score);
-}
+} UserScore;
 
 int ranking(char *name, int score)
 {
-    // Load the list from the binary file
-    RankingEntry ranking[MAX_ENTRIES];
-    int num_entries;
-    // loadFromFile(DATAFILE, &ranking, &num_entries);
-    leerCSV(DATAFILE, ranking, &num_entries);
 
-    printf("ENTRIES %d\n", num_entries);
+    // Variable para los datos que vienen del juego
+    UserScore user_score;
+    strcpy(user_score.name, name);
+    user_score.score = score;
 
-    printf("\nRANKING DE USUARIOS:\n");
-    for (int i = 0; i < num_entries; i++)
+    // memset(&user_score, 0, sizeof(UserScore));
+
+    printf("NOMBRE: %s\n", user_score.name);
+    printf("SCORE: %d\n", user_score.score);
+
+    // Abre el archivo o lo crea si no existe
+    FILE *loaded_ranking = fopen("data/ranking.dat", "ab+");
+    if (loaded_ranking == NULL)
     {
-        printAlignedEntry(ranking[i].name, ranking[i].score);
+        perror("No se pudo cargar el ranking");
+        exit(1);
     }
 
-    if (score > 0)
+    // Asigna memoria para la lista de entradas
+    UserScore *list = malloc(sizeof(UserScore) * (MAX_RANKING_RECORDS + 1));
+
+    UserScore loaded;
+
+    // Contador de registros en el archivo
+    int num_records = 0;
+
+    while (!feof(loaded_ranking))
     {
-        RankingEntry newEntry = createEntry(name, score);
-
-        // Add the new entry if it's among the top 10
-        int insertIndex = num_entries;
-        for (int i = 0; i < num_entries; i++)
+        size_t items_read = fread(&loaded, sizeof(UserScore), 1, loaded_ranking);
+        // Si lee el registro lo agrega a la lista
+        if (items_read == 1)
         {
-            if (newEntry.score > ranking[i].score)
-            {
-                insertIndex = i;
-                break;
-            }
+            // printf("Nombre: %s, Score: %d, \n", loaded.name, loaded.score);
+            strcpy(list[num_records].name, loaded.name);
+            list[num_records].score = loaded.score;
+            num_records++;
         }
+    }
+    fclose(loaded_ranking);
+    printf("LEIDOS: %d\n", num_records);
 
-        if (insertIndex < MAX_ENTRIES)
+    int to_insert;
+
+    if (num_records == 0)
+    {
+        strcpy(list[0].name, user_score.name);
+        list[0].score = user_score.score;
+        to_insert = 1;
+        printf("TO INSERT CERO: %d\n", to_insert);
+    }
+    else
+    {
+        int record_index = -1;
+        // Si ya estAn ocupados todos los lugares
+        if (num_records == MAX_RANKING_RECORDS)
         {
-            // Shift entries to make room for the new entry
-            for (int i = num_entries - 1; i > insertIndex; i--)
+            for (int i = 0; i < MAX_RANKING_RECORDS; i++)
             {
-                ranking[i] = ranking[i - 1];
+                if (list[i].score > user_score.score)
+                {
+                    printf("%s tiene mejor puntaje que %s\n", user_score.name, list[i].name);
+                    strcpy(list[i].name, user_score.name);
+                    list[i].score = user_score.score;
+                    record_index = i;
+                    break;
+                }
             }
-
-            // Insert the new entry
-            ranking[insertIndex] = newEntry;
-
-            // Update the number of entries
-            // num_entries = (num_entries < MAX_ENTRIES) ? (num_entries + 1) : MAX_ENTRIES;
-            RankingEntry data;
-            // Sort the updated list
-            qsort(ranking, num_entries, sizeof(data), compareEntries);
-
-            printf("\nRANKING DE USUARIOS:\n");
-            for (int i = 0; i < num_entries; i++)
-            {
-                printAlignedEntry(ranking[i].name, ranking[i].score);
-            }
-
-            // Save the updated list to the file
-            // saveToFile(DATAFILE, ranking, num_entries);
-            guardarCSV(DATAFILE, ranking, num_entries);
-            printf("\nThe new entry has been added to the ranking.\n");
+            to_insert = num_records;
+            printf("TO INSERT COMPLETO: %d\n", to_insert);
         }
         else
         {
-            printf("\nThe new entry did not make it to the top 10.\n");
+            strcpy(list[num_records].name, user_score.name);
+            list[num_records].score = user_score.score;
+            // list[num_records + 1] = user_score;
+            to_insert = num_records + 1;
+            printf("TO INSERT DISPONIBLE: %d\n", to_insert);
         }
     }
 
-    // Display the current ranking
-    printf("\nRANKING DE USUARIOS:\n");
-    for (int i = 0; i < num_entries; i++)
-    {
-        printAlignedEntry(ranking[i].name, ranking[i].score);
-    }
+    printf("TO INSERT %d\n", to_insert);
 
-    // Free the memory used by the list
-    // free(ranking);
+    FILE *ranking = fopen("data/ranking.dat", "wb");
+    int stored = fwrite(list, sizeof(UserScore), to_insert, ranking);
+    printf("GUARDADO: %d\n", stored);
+    fclose(ranking);
+
+    for (int i = 0; i < num_records; i++)
+    {
+        printf("%d) %s ...... %d\n", i, list[i].name, list[i].score);
+    }
 
     printf("PRESIONA [ENTER] PARA VOLVER AL MENU PRINCIPAL...");
     while (getchar() != '\n')
