@@ -23,19 +23,78 @@ RankingEntry createEntry(char *name, int score)
     return newEntry;
 }
 
+void guardarCSV(const char *file_name, RankingEntry *list, int num_entries)
+{
+    FILE *archivo = fopen(file_name, "w");
+    if (archivo != NULL)
+    {
+        fprintf(archivo, "Nombre,Score\n"); // Escribir encabezados
+        for (int i = 0; i < num_entries; i++)
+        {
+            fprintf(archivo, "%s,%d\n", list[i].name, list[i].score);
+        }
+        fclose(archivo);
+    }
+    else
+    {
+        // Manejar el error de apertura de archivo
+    }
+}
+
+void leerCSV(const char *file_name, RankingEntry *list, int *num_entries)
+{
+    FILE *archivo = fopen(file_name, "r");
+    if (archivo != NULL)
+    {
+        char linea[100];
+        int contador = 0;
+        // Leer la primera línea (encabezados) y descartarla
+        fgets(linea, sizeof(linea), archivo);
+        // Leer el resto de las líneas
+        while (fgets(linea, sizeof(linea), archivo) != NULL)
+        {
+            char name[50];
+            int score;
+            sscanf(linea, "%49[^,],%d", name, &score);
+            strcpy(list[contador].name, name);
+            list[contador].score = score;
+            contador++;
+        }
+        *num_entries = contador;
+        fclose(archivo);
+    }
+    else
+    {
+        // Manejar el error de apertura de archivo
+    }
+}
+
 void saveToFile(const char *file_name, RankingEntry *list, int num_entries)
 {
-    FILE *file = fopen(file_name, "wb");
-    if (file == NULL)
-    {
-        perror("Error abriendo el archivo para escritura.");
-        exit(EXIT_FAILURE);
-    }
-    RankingEntry data;
     printf("ESCRIBIENDO...\n");
-    fwrite(list, sizeof(data), num_entries, file);
+    FILE *file = fopen(file_name, "wb");
+    // if (file == NULL)
+    // {
+    //     perror("Error abriendo el archivo para escritura.");
+    //     exit(EXIT_FAILURE);
+    // }
 
-    fclose(file);
+    if (file != NULL)
+    {
+        for (int i = 0; i < num_entries; i++)
+        {
+            fwrite(&list[i], sizeof(RankingEntry), 1, file); // Escribir cada estructura individualmente
+        }
+        fclose(file);
+    }
+    else
+    {
+        // Manejar el error de apertura de archivo
+    }
+
+    // fwrite(list, sizeof(RankingEntry), num_entries, file);
+
+    // fclose(file);
 }
 
 void loadFromFile(const char *file_name, RankingEntry **list, int *num_entries)
@@ -53,7 +112,7 @@ void loadFromFile(const char *file_name, RankingEntry **list, int *num_entries)
     long file_size = ftell(file);
     *num_entries = file_size / sizeof(data);
 
-    *list = (RankingEntry *)malloc(file_size);
+    *list = (RankingEntry *)malloc(sizeof(RankingEntry) * 10);
 
     rewind(file);
     printf("LEYENDO...\n");
@@ -70,11 +129,18 @@ void printAlignedEntry(const char *name, int score)
 int ranking(char *name, int score)
 {
     // Load the list from the binary file
-    RankingEntry *ranking;
+    RankingEntry ranking[MAX_ENTRIES];
     int num_entries;
-    loadFromFile(DATAFILE, &ranking, &num_entries);
+    // loadFromFile(DATAFILE, &ranking, &num_entries);
+    leerCSV(DATAFILE, ranking, &num_entries);
 
-    printf("ENTRADAS: %d", num_entries);
+    printf("ENTRIES %d\n", num_entries);
+
+    printf("\nRANKING DE USUARIOS:\n");
+    for (int i = 0; i < num_entries; i++)
+    {
+        printAlignedEntry(ranking[i].name, ranking[i].score);
+    }
 
     if (score > 0)
     {
@@ -84,7 +150,6 @@ int ranking(char *name, int score)
         int insertIndex = num_entries;
         for (int i = 0; i < num_entries; i++)
         {
-            printf("New Entry Score: %d - Ranking Score: %d", newEntry.score, ranking[i].score);
             if (newEntry.score > ranking[i].score)
             {
                 insertIndex = i;
@@ -104,13 +169,20 @@ int ranking(char *name, int score)
             ranking[insertIndex] = newEntry;
 
             // Update the number of entries
-            num_entries = (num_entries < MAX_ENTRIES) ? (num_entries + 1) : MAX_ENTRIES;
-
+            // num_entries = (num_entries < MAX_ENTRIES) ? (num_entries + 1) : MAX_ENTRIES;
+            RankingEntry data;
             // Sort the updated list
-            qsort(ranking, num_entries, sizeof(RankingEntry), compareEntries);
+            qsort(ranking, num_entries, sizeof(data), compareEntries);
+
+            printf("\nRANKING DE USUARIOS:\n");
+            for (int i = 0; i < num_entries; i++)
+            {
+                printAlignedEntry(ranking[i].name, ranking[i].score);
+            }
 
             // Save the updated list to the file
-            saveToFile(DATAFILE, ranking, num_entries);
+            // saveToFile(DATAFILE, ranking, num_entries);
+            guardarCSV(DATAFILE, ranking, num_entries);
             printf("\nThe new entry has been added to the ranking.\n");
         }
         else
@@ -127,7 +199,7 @@ int ranking(char *name, int score)
     }
 
     // Free the memory used by the list
-    free(ranking);
+    // free(ranking);
 
     printf("PRESIONA [ENTER] PARA VOLVER AL MENU PRINCIPAL...");
     while (getchar() != '\n')
