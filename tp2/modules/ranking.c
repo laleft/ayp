@@ -40,6 +40,7 @@ void sortScore(UserScore *list, int length)
 // Imprime el ranking con formato
 void printRanking(UserScore *list, int list_length, int *position)
 {
+    // Encabezado
     BR(2);
     MGT;
     printBox("RANKING", 60, '*');
@@ -47,12 +48,16 @@ void printRanking(UserScore *list, int list_length, int *position)
     BR(2);
     printf("%4s %52s", "USUARIO", "SEGUNDOS");
     BR(2);
+
     for (int i = 0; i < list_length; i++)
     {
+        // Si el indice coincide con la posiciOn
+        // del score, resalta la lInea
         if (*position == i)
             CYN;
         printf("%2d - %s ", i + 1, list[i].name);
         int name_length = strlen(list[i].name);
+        // Imprime la lInea punteada
         for (int d = 0; d < 50 - name_length; d++)
         {
             printf(".");
@@ -132,6 +137,7 @@ void updateRanking(UserScore user_score, UserScore *list, int *num_records, int 
         {
             // Si quedan lugares disponibles
             // Busca en quE posiciOn va a quedar
+            // La lista ya estA ordenada
             for (int i = 0; i < *num_records; i++)
             {
                 if (list[i].score > user_score.score)
