@@ -24,5 +24,6 @@
 #define YLW printf("%s", COLOR_YELLOW);
 #define RST printf("%s", COLOR_RESET);
 #define CYN printf("%s", COLOR_CYAN);
+#define MGT printf("%s", COLOR_MAGENTA);
 
 #define CLS printf("\033[2J\033[1;1H");
